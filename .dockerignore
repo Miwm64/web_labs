@@ -1,0 +1,16 @@
+node_modules/
+.git/
+.gitignore
+.github/
+.scannerwork/
+Dockerfile
+.dockerignore
+compose.yaml
+package.json
+package-lock.json
+eslint.config.js
+.prettierrc
+.prettierignore
+qodana.yaml
+sonar-project.properties
+README.md
