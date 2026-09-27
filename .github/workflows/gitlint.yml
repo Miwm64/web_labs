@@ -1,16 +1,21 @@
 name: GitLint
 
 on:
-  push:
-  pull_request:
+    push:
+        branches:
+            - master
+    pull_request:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  gitlint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Lint commits, branches, and pull requests
-        uses: aschbacd/gitlint-action@v1.2.0
-        with:
-          re-branch-name: "^(main|master|(feature|fix|refactor|docs|test|chore)/.+)$"
-          re-commit-message-subject: '^(feat|fix|refactor|docs|test|chore)(\([a-z0-9-]+\))?: .+'
+    gitlint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Lint commits, branches, and pull requests
+              uses: aschbacd/gitlint-action@v1.2.0
+              with:
+                  re-branch-name: "^(main|master|(feature|fix|refactor|docs|test|chore)/.+)$"
+                  re-commit-message-subject: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?: .+'

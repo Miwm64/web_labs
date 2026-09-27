@@ -1,20 +1,17 @@
 {
-  "name": "web-lab1",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "commitlint": "commitlint"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "latest",
-    "@commitlint/config-conventional": "latest",
-    "@eslint/js": "latest",
-    "eslint": "latest",
-    "globals": "latest",
-    "prettier": "latest"
-  }
+    "name": "web_lab1",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "@eslint/js": "latest",
+        "eslint": "latest",
+        "globals": "latest",
+        "prettier": "latest"
+    }
 }

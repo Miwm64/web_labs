@@ -1,4 +1,6 @@
-# Web-programming laboratory work #1
+# web_lab1
+
+Web-programming laboratory work #1
 
 ## Task variant: 398893
 
@@ -11,3 +13,7 @@
 ### qodana static analysis
 
 ### sonar static analysis
+
+### prettier code formatting
+
+### gitlint commit message linting
