@@ -1,6 +1,7 @@
 FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --exclude=nginx.conf . /usr/share/nginx/html/
+COPY index.html styles.css /usr/share/nginx/html/
 
 EXPOSE 80
+USER nginx
