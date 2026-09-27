@@ -1,6 +1,17 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 :root {
     --color-text: #1f2328;
     --color-muted: #5b6570;
+    --color-border: #8b949e;
+    --color-accent: #1f4e79;
+    --color-danger: #a4262c;
+    --color-ok: #1b6e3c;
+    --color-surface: #ffffff;
     --font-cursive: "Bradley Hand", cursive;
 }
 
@@ -29,6 +40,208 @@
     color: var(--color-text);
     font-size: 1.2rem;
     font-weight: 600;
+}
+
+#page-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4%;
+    align-items: start;
+    justify-items: center;
+    max-width: 1100px;
+    margin: 2% auto 0;
+}
+
+#form-panel {
+    width: 100%;
+    max-width: 440px;
+    padding: 2%;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-surface);
+}
+
+#check-form {
+    display: grid;
+    gap: 1.2rem;
+}
+
+.form-group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.form-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.form-legend,
+.form-label {
+    font-weight: 600;
+}
+
+.form-head > .form-label {
+    margin-bottom: 0;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+    border: 0;
+}
+
+.info-button {
+    width: 1.2rem;
+    height: 1.2rem;
+    padding: 0;
+    font: inherit;
+    color: var(--color-accent);
+    background-color: transparent;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.info-button:hover {
+    color: var(--color-surface);
+    background-color: var(--color-accent);
+}
+
+.form-hint {
+    position: absolute;
+    z-index: 3;
+    display: none;
+    top: calc(100% + 0.3rem);
+    left: 0;
+    width: max-content;
+    max-width: 20rem;
+    margin: 0;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+    color: var(--color-surface);
+    background-color: var(--color-text);
+    border-radius: 4px;
+}
+
+.form-hint[data-open="true"] {
+    display: block;
+}
+
+#x-hint {
+    top: auto;
+    bottom: calc(100% + 0.3rem);
+    right: 0;
+    left: auto;
+}
+
+.form-error {
+    display: none;
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    color: var(--color-danger);
+}
+
+.form-error[data-filled="true"] {
+    display: block;
+}
+
+.form-error[data-filled="true"]::before {
+    content: "\26d4\00a0";
+}
+
+.checkbox-row {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: 1%;
+    align-items: center;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.checkbox-item > label {
+    cursor: pointer;
+}
+
+input {
+    margin: 1% 2%;
+    padding: 0.5rem 0.7rem;
+    font: inherit;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+}
+
+input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 1% 6% 1% 0;
+    accent-color: var(--color-accent);
+}
+
+input:hover {
+    border-color: var(--color-accent);
+}
+
+input:focus,
+.info-button:focus,
+.button:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+
+input:invalid {
+    border-color: var(--color-text);
+}
+
+input:valid {
+    border-color: var(--color-ok);
+}
+
+input[data-invalid="true"] {
+    border-color: var(--color-danger);
+    background-color: #fdf3f3;
+}
+
+#x-group[data-invalid="true"] {
+    outline: 1px solid var(--color-danger);
+    outline-offset: 4px;
+}
+
+.button {
+    padding: 0.6rem 1.4rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--color-surface);
+    border: 0;
+    border-radius: 4px;
+    background-color: var(--color-accent);
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #163a5a;
+}
+
+@media (max-width: 900px) {
+    #page-main {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 #coordinate-plane {
