@@ -30,3 +30,10 @@
     font-size: 1.05rem;
     font-weight: 600;
 }
+
+#coordinate-plane {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1 / 1;
+    display: block;
+}
