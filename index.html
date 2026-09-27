@@ -6,6 +6,7 @@
         <title>Лабораторная работа №1 — Проверка попадания точки в область</title>
         <link rel="stylesheet" href="styles.css" />
         <script src="src/canvas.js" defer></script>
+        <script src="src/form.js" defer></script>
     </head>
     <body>
         <header id="page-header">
@@ -23,6 +24,136 @@
             </dl>
         </header>
 
-        <canvas id="coordinate-plane"></canvas>
+        <main id="page-main">
+            <canvas id="coordinate-plane"></canvas>
+
+            <section id="form-panel">
+                <h2 id="form-title">Проверка точки</h2>
+
+                <form id="check-form" novalidate>
+                    <fieldset class="form-group" id="x-group">
+                        <legend class="visually-hidden">X — координата точки</legend>
+                        <div class="form-head">
+                            <span class="form-label" aria-hidden="true">X — координата точки</span>
+                            <button
+                                type="button"
+                                class="info-button"
+                                aria-expanded="false"
+                                aria-controls="x-hint"
+                                data-tooltip-for="x"
+                            >
+                                ?
+                            </button>
+                            <p class="form-hint" id="x-hint" role="tooltip">
+                                Допустимые значения: от -4 до 4. Отмечается только одно значение.
+                            </p>
+                        </div>
+
+                        <div class="checkbox-row">
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-neg-4" name="x" value="-4" />
+                                <label for="x-neg-4">-4</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-neg-3" name="x" value="-3" />
+                                <label for="x-neg-3">-3</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-neg-2" name="x" value="-2" />
+                                <label for="x-neg-2">-2</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-neg-1" name="x" value="-1" />
+                                <label for="x-neg-1">-1</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-zero" name="x" value="0" />
+                                <label for="x-zero">0</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-pos-1" name="x" value="1" />
+                                <label for="x-pos-1">1</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-pos-2" name="x" value="2" />
+                                <label for="x-pos-2">2</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-pos-3" name="x" value="3" />
+                                <label for="x-pos-3">3</label>
+                            </span>
+                            <span class="checkbox-item">
+                                <input type="checkbox" id="x-pos-4" name="x" value="4" />
+                                <label for="x-pos-4">4</label>
+                            </span>
+                        </div>
+
+                        <p class="form-error" id="x-error" role="alert"></p>
+                    </fieldset>
+
+                    <div class="form-field">
+                        <div class="form-head">
+                            <label class="form-label" for="y">Y — координата точки</label>
+                            <button
+                                type="button"
+                                class="info-button"
+                                aria-expanded="false"
+                                aria-controls="y-hint"
+                                data-tooltip-for="y"
+                            >
+                                ?
+                            </button>
+                            <p class="form-hint" id="y-hint" role="tooltip">
+                                Допустимые значения: от -3 до 3. Шаг любой, разделитель — точка или
+                                запятая.
+                            </p>
+                        </div>
+                        <input
+                            type="text"
+                            id="y"
+                            name="y"
+                            required
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="От -3 до 3"
+                            pattern="-?[0-9]+([.,][0-9]+)?"
+                        />
+                        <p class="form-error" id="y-error" role="alert"></p>
+                    </div>
+
+                    <div class="form-field">
+                        <div class="form-head">
+                            <label class="form-label" for="r">R — параметр области</label>
+                            <button
+                                type="button"
+                                class="info-button"
+                                aria-expanded="false"
+                                aria-controls="r-hint"
+                                data-tooltip-for="r"
+                            >
+                                ?
+                            </button>
+                            <p class="form-hint" id="r-hint" role="tooltip">
+                                Допустимые значения: от 2 до 5. Шаг любой. Пока R не задан, область
+                                не рисуется.
+                            </p>
+                        </div>
+                        <input
+                            type="text"
+                            id="r"
+                            name="r"
+                            required
+                            inputmode="decimal"
+                            pattern="[0-9]+([.,][0-9]+)?"
+                            autocomplete="off"
+                            placeholder="От 2 до 5"
+                        />
+                        <p class="form-error" id="r-error" role="alert"></p>
+                    </div>
+
+                    <button type="submit" id="submit-button" class="button">Проверить</button>
+                </form>
+            </section>
+        </main>
     </body>
 </html>
