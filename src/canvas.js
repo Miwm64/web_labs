@@ -66,12 +66,13 @@ function resizeCanvas() {
 
 const CANVAS_ID = "coordinate-plane";
 
-const PLANE_MIN = -5;
-const PLANE_MAX = 5;
+const PLANE_MIN = -5.5;
+const PLANE_MAX = 5.5;
 const PLANE_SPAN = PLANE_MAX - PLANE_MIN;
 const DEFAULT_RADIUS = 3;
 
 let currentRadius = DEFAULT_RADIUS;
+let areaVisible = false;
 
 const FULL_TURN = Math.PI * 2;
 const DOT_RADIUS = 3;
@@ -257,6 +258,7 @@ function draw_plane(r) {
     const originY = toPixelY(0, height);
 
     currentRadius = r;
+    areaVisible = true;
 
     paint_plane(r, ctx, originX, originY, width, height);
 }
@@ -267,6 +269,7 @@ function clear_canvas() {
 
     canvas.getContext("2d").clearRect(0, 0, width, height);
     plottedDots.length = 0;
+    areaVisible = false;
 }
 
 function clear_dots() {
@@ -308,6 +311,9 @@ Object.assign(window, PUBLIC_API);
 function render() {
     resizeCanvas();
     draw_canvas();
+    if (areaVisible) {
+        draw_plane(currentRadius);
+    }
     plottedDots.length = 0;
 }
 
