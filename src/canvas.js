@@ -64,19 +64,14 @@ function resizeCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-resizeCanvas();
-draw_canvas();
-
-window.addEventListener("resize", () => {
-    resizeCanvas();
-    draw_canvas();
-});
-
 const CANVAS_ID = "coordinate-plane";
 
 const PLANE_MIN = -5;
 const PLANE_MAX = 5;
 const PLANE_SPAN = PLANE_MAX - PLANE_MIN;
+const DEFAULT_RADIUS = 3;
+
+let currentRadius = DEFAULT_RADIUS;
 
 const FULL_TURN = Math.PI * 2;
 const DOT_RADIUS = 3;
@@ -168,7 +163,69 @@ function draw_triangle(r, ctx, originX, originY, width, height) {
     fillAndStroke(ctx, TRIANGLE_FILL, TRIANGLE_STROKE);
 }
 
-function draw_area(r) {
+const TICK_LENGTH = 8;
+const TICK_STROKE_COLOR = "rgb(31 41 55)";
+const TICK_STROKE_WIDTH = 1;
+const HALF_DIVISOR = 2;
+const HALF_PIXEL = 0.5;
+
+const TICK_LABEL_FONT = "bold 12px sans-serif";
+const TICK_LABEL_COLOR = "rgb(31 41 55)";
+const TICK_LABEL_GAP = 5;
+const R_LABEL = "R";
+const HALF_R_SUFFIX = `/${HALF_DIVISOR}`;
+
+function tickValues(r) {
+    const half = r / HALF_DIVISOR;
+    return [
+        { value: -r, label: `-${R_LABEL}` },
+        { value: -half, label: `-${R_LABEL}${HALF_R_SUFFIX}` },
+        { value: half, label: `${R_LABEL}${HALF_R_SUFFIX}` },
+        { value: r, label: R_LABEL },
+    ];
+}
+
+function draw_ticks(r, ctx, originX, originY, width, height) {
+    const half = TICK_LENGTH / 2;
+    const lastColumn = width - 1;
+    const lastRow = height - 1;
+
+    ctx.beginPath();
+    for (const tick of tickValues(r)) {
+        const x = Math.min(Math.floor(toPixelX(tick.value, width)), lastColumn) + HALF_PIXEL;
+        ctx.moveTo(x, originY - half);
+        ctx.lineTo(x, originY + half);
+
+        const y = Math.min(Math.floor(toPixelY(tick.value, height)), lastRow) + HALF_PIXEL;
+        ctx.moveTo(originX - half, y);
+        ctx.lineTo(originX + half, y);
+    }
+    ctx.strokeStyle = TICK_STROKE_COLOR;
+    ctx.lineWidth = TICK_STROKE_WIDTH;
+    ctx.stroke();
+}
+
+function draw_tick_labels(r, ctx, originX, originY, width, height) {
+    const offset = TICK_LENGTH / 2 + TICK_LABEL_GAP;
+    const ticks = tickValues(r);
+
+    ctx.fillStyle = TICK_LABEL_COLOR;
+    ctx.font = TICK_LABEL_FONT;
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    for (const tick of ticks) {
+        ctx.fillText(tick.label, toPixelX(tick.value, width), originY + offset);
+    }
+
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    for (const tick of ticks) {
+        ctx.fillText(tick.label, originX - offset, toPixelY(tick.value, height));
+    }
+}
+
+function draw_plane(r) {
     if (!Number.isFinite(r)) {
         throw new TypeError("Radius must be a finite number");
     }
@@ -185,10 +242,24 @@ function draw_area(r) {
     const originX = toPixelX(0, width);
     const originY = toPixelY(0, height);
 
+    currentRadius = r;
+
     draw_square(r, ctx, originX, originY, width, height);
     draw_quarter_disc(r, ctx, originX, originY, width);
     draw_triangle(r, ctx, originX, originY, width, height);
+    draw_ticks(r, ctx, originX, originY, width, height);
+    draw_tick_labels(r, ctx, originX, originY, width, height);
 }
 
-const PUBLIC_API = { draw_dot, draw_area };
+const PUBLIC_API = { draw_plane, draw_dot };
 Object.assign(window, PUBLIC_API);
+
+function render() {
+    resizeCanvas();
+    draw_canvas();
+    draw_plane(currentRadius);
+}
+
+render();
+
+window.addEventListener("resize", render);
