@@ -9,6 +9,12 @@ export default [
             sourceType: "module",
             globals: {
                 ...globals.browser,
+                draw_canvas: "readonly",
+                resizeCanvas: "readonly",
+                draw_plane: "readonly",
+                draw_dot: "readonly",
+                clear_canvas: "readonly",
+                clear_dots: "readonly",
             },
         },
         rules: {
