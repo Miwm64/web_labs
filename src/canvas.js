@@ -78,6 +78,10 @@ const DOT_RADIUS = 3;
 const DOT_COLOR = "rgb(255 140 0)";
 const DOT_BORDER_COLOR = "rgb(255 255 255)";
 const DOT_BORDER_WIDTH = 1;
+const DOT_CLEAR_PADDING = 1;
+const CANVAS_BACKGROUND = "rgb(255 255 255)";
+
+const plottedDots = [];
 
 function toPixelX(value, width) {
     return ((value - PLANE_MIN) / PLANE_SPAN) * width;
@@ -108,6 +112,8 @@ function draw_dot(x, y) {
     ctx.arc(toPixelX(x, rect.width), toPixelY(y, rect.height), DOT_RADIUS, 0, FULL_TURN);
     ctx.fill();
     ctx.stroke();
+
+    plottedDots.push({ x, y, radius: currentRadius });
 }
 
 const AREA_STROKE_WIDTH = 1;
@@ -225,6 +231,14 @@ function draw_tick_labels(r, ctx, originX, originY, width, height) {
     }
 }
 
+function paint_plane(r, ctx, originX, originY, width, height) {
+    draw_square(r, ctx, originX, originY, width, height);
+    draw_quarter_disc(r, ctx, originX, originY, width);
+    draw_triangle(r, ctx, originX, originY, width, height);
+    draw_ticks(r, ctx, originX, originY, width, height);
+    draw_tick_labels(r, ctx, originX, originY, width, height);
+}
+
 function draw_plane(r) {
     if (!Number.isFinite(r)) {
         throw new TypeError("Radius must be a finite number");
@@ -244,20 +258,57 @@ function draw_plane(r) {
 
     currentRadius = r;
 
-    draw_square(r, ctx, originX, originY, width, height);
-    draw_quarter_disc(r, ctx, originX, originY, width);
-    draw_triangle(r, ctx, originX, originY, width, height);
-    draw_ticks(r, ctx, originX, originY, width, height);
-    draw_tick_labels(r, ctx, originX, originY, width, height);
+    paint_plane(r, ctx, originX, originY, width, height);
 }
 
-const PUBLIC_API = { draw_plane, draw_dot };
+function clear_canvas() {
+    const canvas = document.getElementById(CANVAS_ID);
+    const { width, height } = canvas.getBoundingClientRect();
+
+    canvas.getContext("2d").clearRect(0, 0, width, height);
+    plottedDots.length = 0;
+}
+
+function clear_dots() {
+    if (plottedDots.length === 0) {
+        return;
+    }
+
+    const canvas = document.getElementById(CANVAS_ID);
+    const rect = canvas.getBoundingClientRect();
+    const { width, height } = rect;
+    const ctx = canvas.getContext("2d");
+    const originX = toPixelX(0, width);
+    const originY = toPixelY(0, height);
+    const reach = DOT_RADIUS + DOT_BORDER_WIDTH + DOT_CLEAR_PADDING;
+
+    for (const dot of plottedDots) {
+        const centerX = toPixelX(dot.x, width);
+        const centerY = toPixelY(dot.y, height);
+        const left = centerX - reach;
+        const top = centerY - reach;
+        const size = reach * 2;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(left, top, size, size);
+        ctx.clip();
+        ctx.fillStyle = CANVAS_BACKGROUND;
+        ctx.fillRect(left, top, size, size);
+        paint_plane(dot.radius, ctx, originX, originY, width, height);
+        ctx.restore();
+    }
+
+    plottedDots.length = 0;
+}
+
+const PUBLIC_API = { draw_plane, draw_dot, clear_canvas, clear_dots };
 Object.assign(window, PUBLIC_API);
 
 function render() {
     resizeCanvas();
     draw_canvas();
-    draw_plane(currentRadius);
+    plottedDots.length = 0;
 }
 
 render();
