@@ -15,7 +15,7 @@ export default [
       // Airbnb-style conventions, applied directly (no external Airbnb package,
       // since eslint-config-airbnb-base/flat are both incompatible with latest ESLint)
       semi: ["error", "always"],
-      quotes: ["error", "single", { avoidEscape: true }],
+      quotes: ["error", "double", { avoidEscape: true }],
       indent: ["error", 2],
       "no-var": "error",
       "prefer-const": "error",
