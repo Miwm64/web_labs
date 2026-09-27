@@ -19,3 +19,6 @@ jobs:
               with:
                   re-branch-name: "^(main|master|(feature|fix|refactor|docs|test|chore)/.+)$"
                   re-commit-message-subject: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?: .+'
+                  re-pull-request-title: '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?: .+'
+                  commit-message-subject-max-length: 72
+                  commit-message-body-max-length: 100
