@@ -80,7 +80,7 @@ const PLANE_SPAN = PLANE_MAX - PLANE_MIN;
 
 const FULL_TURN = Math.PI * 2;
 const DOT_RADIUS = 3;
-const DOT_COLOR = "rgb(34 139 34)";
+const DOT_COLOR = "rgb(255 140 0)";
 const DOT_BORDER_COLOR = "rgb(255 255 255)";
 const DOT_BORDER_WIDTH = 1;
 
@@ -115,5 +115,80 @@ function draw_dot(x, y) {
     ctx.stroke();
 }
 
-const PUBLIC_API = { draw_dot };
+const AREA_STROKE_WIDTH = 1;
+const QUARTER_TURN = Math.PI / 2;
+const DISC_RADIUS_DIVISOR = 2;
+
+const SQUARE_FILL = "rgb(31 78 121 / 20%)";
+const SQUARE_STROKE = "rgb(31 78 121)";
+const DISC_FILL = "rgb(27 110 60 / 20%)";
+const DISC_STROKE = "rgb(27 110 60)";
+const TRIANGLE_FILL = "rgb(164 38 44 / 20%)";
+const TRIANGLE_STROKE = "rgb(164 38 44)";
+
+function pixelsPerUnit(length) {
+    return length / PLANE_SPAN;
+}
+
+function fillAndStroke(ctx, fill, stroke) {
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = AREA_STROKE_WIDTH;
+    ctx.fill();
+    ctx.stroke();
+}
+
+function draw_square(r, ctx, originX, originY, width, height) {
+    const left = Math.min(toPixelX(-r, width), originX);
+    const right = Math.max(toPixelX(-r, width), originX);
+    const top = Math.min(toPixelY(r, height), originY);
+    const bottom = Math.max(toPixelY(r, height), originY);
+
+    ctx.beginPath();
+    ctx.rect(left, top, right - left, bottom - top);
+    fillAndStroke(ctx, SQUARE_FILL, SQUARE_STROKE);
+}
+
+function draw_quarter_disc(r, ctx, originX, originY, width) {
+    const radius = Math.abs(r / DISC_RADIUS_DIVISOR) * pixelsPerUnit(width);
+
+    ctx.beginPath();
+    ctx.moveTo(originX, originY);
+    ctx.arc(originX, originY, radius, 0, -QUARTER_TURN, true);
+    ctx.closePath();
+    fillAndStroke(ctx, DISC_FILL, DISC_STROKE);
+}
+
+function draw_triangle(r, ctx, originX, originY, width, height) {
+    ctx.beginPath();
+    ctx.moveTo(originX, originY);
+    ctx.lineTo(toPixelX(r, width), originY);
+    ctx.lineTo(originX, toPixelY(-r, height));
+    ctx.closePath();
+    fillAndStroke(ctx, TRIANGLE_FILL, TRIANGLE_STROKE);
+}
+
+function draw_area(r) {
+    if (!Number.isFinite(r)) {
+        throw new TypeError("Radius must be a finite number");
+    }
+    if (r < PLANE_MIN || r > PLANE_MAX) {
+        throw new RangeError(
+            `Radius is outside the plane: allowed range is [${PLANE_MIN}, ${PLANE_MAX}]`
+        );
+    }
+
+    const canvas = document.getElementById(CANVAS_ID);
+    const rect = canvas.getBoundingClientRect();
+    const { width, height } = rect;
+    const ctx = canvas.getContext("2d");
+    const originX = toPixelX(0, width);
+    const originY = toPixelY(0, height);
+
+    draw_square(r, ctx, originX, originY, width, height);
+    draw_quarter_disc(r, ctx, originX, originY, width);
+    draw_triangle(r, ctx, originX, originY, width, height);
+}
+
+const PUBLIC_API = { draw_dot, draw_area };
 Object.assign(window, PUBLIC_API);
