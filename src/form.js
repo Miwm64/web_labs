@@ -56,7 +56,7 @@ function fieldError(field, limits) {
 function cleanNumber(raw, signed) {
     let text = raw.replace(ALLOWED_CHARS, "");
     const hasLeadingSign = signed && text.startsWith("-");
-    text = text.split("-").join("");
+    text = text.replaceAll("-", "");
     if (hasLeadingSign) {
         text = `-${text}`;
     }
@@ -67,18 +67,18 @@ function cleanNumber(raw, signed) {
 function setError(element, text) {
     element.textContent = text;
     if (text === "") {
-        element.removeAttribute("data-filled");
+        delete element.dataset.filled;
         return;
     }
-    element.setAttribute("data-filled", "true");
+    element.dataset.filled = "true";
 }
 
 function markInvalid(element, invalid) {
     if (invalid) {
-        element.setAttribute("data-invalid", "true");
+        element.dataset.invalid = "true";
         return;
     }
-    element.removeAttribute("data-invalid");
+    delete element.dataset.invalid;
 }
 
 function restrictInput(input, signed) {
@@ -98,7 +98,7 @@ function watchField(input, limits, errorElement) {
         timer = null;
         const error = fieldError(input, limits);
         markInvalid(input, error !== "");
-        if (errorElement.hasAttribute("data-filled")) {
+        if ("filled" in errorElement.dataset) {
             setError(errorElement, error);
         }
     };
@@ -184,19 +184,19 @@ function initTooltips() {
 
     function closeAll() {
         for (const { button, hint } of tips) {
-            hint.removeAttribute("data-open");
+            delete hint.dataset.open;
             button.setAttribute("aria-expanded", "false");
         }
     }
 
     for (const { button, hint } of tips) {
         button.addEventListener("click", () => {
-            const wasOpen = hint.getAttribute("data-open") === "true";
+            const wasOpen = hint.dataset.open === "true";
             closeAll();
             if (wasOpen) {
                 return;
             }
-            hint.setAttribute("data-open", "true");
+            hint.dataset.open = "true";
             button.setAttribute("aria-expanded", "true");
         });
     }
