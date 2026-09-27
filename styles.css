@@ -17,40 +17,45 @@
 }
 
 #page-title {
-    max-width: 60%;
-    margin-inline: auto;
+    margin: 0 0 0.4rem;
+    font-size: 1.5rem;
     text-align: center;
 }
 
 #student-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem 0.35rem;
+    margin: 0;
     font-family: var(--font-cursive);
+    font-size: 1.05rem;
     color: var(--color-muted);
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 0.4rem 1.5rem;
-    max-width: 40ch;
-    margin: 1.5rem auto 0;
 }
 
-.student-info-label {
-    font-size: 1.2rem;
+.student-info-item {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.student-info-item + .student-info-item::before {
+    content: "|";
 }
 
 .student-info-value {
     margin: 0;
-    color: var(--color-text);
-    font-size: 1.2rem;
     font-weight: 600;
+    color: var(--color-text);
 }
 
 #page-main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4%;
-    align-items: start;
+    align-items: center;
     justify-items: center;
     max-width: 1100px;
-    margin: 2% auto 0;
+    margin: 2rem auto 0;
 }
 
 #form-panel {
