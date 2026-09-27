@@ -1,0 +1,14 @@
+{
+  "name": "web-lab1",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "@eslint/js": "latest",
+    "globals": "latest"
+  }
+}
