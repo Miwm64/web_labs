@@ -1,0 +1,17 @@
+{
+    "name": "web_lab1",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "lint": "eslint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "@eslint/js": "latest",
+        "eslint": "latest",
+        "globals": "latest",
+        "prettier": "latest"
+    }
+}

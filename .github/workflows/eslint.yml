@@ -1,0 +1,25 @@
+name: ESLint
+
+on:
+    push:
+    pull_request:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    eslint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "26"
+                  cache: npm
+            - name: Install dependencies
+              run: npm ci
+            - name: Lint sources
+              run: npm run lint
