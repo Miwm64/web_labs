@@ -1,0 +1,32 @@
+:root {
+    --color-text: #1f2328;
+    --color-muted: #5b6570;
+    --font-cursive: "Bradley Hand", cursive;
+}
+
+#page-title {
+    max-width: 60%;
+    margin-inline: auto;
+    text-align: center;
+}
+
+#student-info {
+    font-family: var(--font-cursive);
+    color: var(--color-muted);
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.5rem;
+    max-width: 40ch;
+    margin: 1.5rem auto 0;
+}
+
+.student-info-label {
+    font-size: 0.95rem;
+}
+
+.student-info-value {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1.05rem;
+    font-weight: 600;
+}
