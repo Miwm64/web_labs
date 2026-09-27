@@ -1,7 +1,7 @@
 const AXIS_COLOR = "rgb(0 0 0)";
 const ARROW_LENGTH = 12;
 const ARROW_WIDTH = 8;
-const LABEL_FONT = "bold 16px sans-serif";
+const LABEL_FONT = "bold 12px sans-serif";
 
 function draw_arrow(ctx, fromX, fromY, toX, toY) {
     const angle = Math.atan2(toY - fromY, toX - fromX);
