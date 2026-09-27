@@ -4,11 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "commitlint": "commitlint"
   },
   "devDependencies": {
-    "eslint": "latest",
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
     "@eslint/js": "latest",
-    "globals": "latest"
+    "eslint": "latest",
+    "globals": "latest",
+    "prettier": "latest"
   }
 }
