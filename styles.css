@@ -213,7 +213,7 @@
 input {
     width: calc(100% - 4%);
     margin: 1% 2%;
-    padding: 0.6rem 0.8rem;
+    padding: 2% 3%;
     font: inherit;
     font-size: 1.1rem;
     color: var(--color-text);
