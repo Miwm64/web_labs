@@ -23,8 +23,8 @@
 }
 
 #student-info {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-auto-flow: column;
     justify-content: center;
     gap: 0.2rem 0.35rem;
     margin: 0;
@@ -34,7 +34,8 @@
 }
 
 .student-info-item {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
     gap: 0.35rem;
 }
 
@@ -85,7 +86,9 @@
 
 .form-head {
     position: relative;
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
     align-items: center;
     gap: 0.4rem;
     margin-bottom: 0.5rem;
@@ -195,7 +198,8 @@
 }
 
 .checkbox-item {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
@@ -322,10 +326,9 @@ input[data-invalid="true"] {
 }
 
 .results-head {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.8rem;
 }
