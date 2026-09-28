@@ -80,7 +80,6 @@ const DOT_COLOR = "rgb(255 140 0)";
 const DOT_BORDER_COLOR = "rgb(255 255 255)";
 const DOT_BORDER_WIDTH = 1;
 const DOT_CLEAR_PADDING = 1;
-const CANVAS_BACKGROUND = "rgb(255 255 255)";
 
 const plottedDots = [];
 
@@ -296,9 +295,10 @@ function clear_dots() {
         ctx.beginPath();
         ctx.rect(left, top, size, size);
         ctx.clip();
-        ctx.fillStyle = CANVAS_BACKGROUND;
-        ctx.fillRect(left, top, size, size);
-        paint_plane(dot.radius, ctx, originX, originY, width, height);
+        draw_canvas();
+        if (areaVisible) {
+            paint_plane(dot.radius, ctx, originX, originY, width, height);
+        }
         ctx.restore();
     }
 
@@ -314,7 +314,11 @@ function render() {
     if (areaVisible) {
         draw_plane(currentRadius);
     }
-    plottedDots.length = 0;
+
+    const dots = plottedDots.splice(0);
+    for (const { x, y } of dots) {
+        draw_dot(x, y);
+    }
 }
 
 render();
