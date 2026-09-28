@@ -199,10 +199,23 @@ function initValidation() {
     });
 }
 
+function doClear() {
+    clear_dots();
+    clearResults();
+    lastPoint = null;
+}
+
 function initClearButton() {
+    const dialog = document.getElementById("clear-dialog");
+
     document.getElementById("clear-button").addEventListener("click", () => {
-        clear_dots();
-        clearResults();
+        dialog.showModal();
+    });
+
+    dialog.addEventListener("close", () => {
+        if (dialog.returnValue === "confirm") {
+            doClear();
+        }
     });
 }
 
