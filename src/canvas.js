@@ -1,5 +1,5 @@
 const CANVAS_ID = "coordinate-plane";
-const BOLD_LABEL_FONT = "bold 12px sans-serif";
+const BOLD_LABEL_FONT = "bold 16px sans-serif";
 
 const AXIS_COLOR = "rgb(0 0 0)";
 const ARROW_LENGTH = 12;
@@ -56,7 +56,7 @@ function draw_canvas() {
 function resizeCanvas() {
     const canvas = document.getElementById(CANVAS_ID);
     const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = (window.devicePixelRatio || 1)*2;
 
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);

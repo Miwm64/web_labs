@@ -18,7 +18,7 @@
 
 #page-title {
     margin: 0 0 0.4rem;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     text-align: center;
 }
 
@@ -29,7 +29,7 @@
     gap: 0.2rem 0.35rem;
     margin: 0;
     font-family: var(--font-cursive);
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     color: var(--color-muted);
 }
 
@@ -290,7 +290,7 @@ input[data-invalid="true"] {
 
 #coordinate-plane {
     width: 100%;
-    max-width: 500px;
+
     border: 1px solid black;
     border-radius: 10px;
     aspect-ratio: 1 / 1;
