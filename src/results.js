@@ -147,3 +147,4 @@ const RESULTS_API = { isHit, getResults, addResult, clearResults };
 Object.assign(window, RESULTS_API);
 
 renderResults();
+window.addEventListener("focus", renderResults);
