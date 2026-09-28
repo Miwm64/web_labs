@@ -92,7 +92,7 @@
 }
 
 .form-label {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -269,7 +269,7 @@ input[data-invalid="true"] {
 .button {
     padding: 0.7rem 1.6rem;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-surface);
     border: 0;
@@ -396,14 +396,14 @@ td[data-hit="false"] {
 
 .confirm-dialog-text {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-text);
 }
 
 .confirm-dialog-hint {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: var(--color-muted);
 }
 

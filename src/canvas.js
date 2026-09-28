@@ -56,7 +56,7 @@ function draw_canvas() {
 function resizeCanvas() {
     const canvas = document.getElementById(CANVAS_ID);
     const rect = canvas.getBoundingClientRect();
-    const dpr = (window.devicePixelRatio || 1)*2;
+    const dpr = (window.devicePixelRatio || 1) * 2;
 
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);
