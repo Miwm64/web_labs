@@ -30,7 +30,11 @@
         </header>
 
         <main id="page-main">
-            <canvas id="coordinate-plane"></canvas>
+            <canvas
+                id="coordinate-plane"
+                role="img"
+                aria-label="Координатная плоскость с областью варианта"
+            ></canvas>
 
             <section id="form-panel">
                 <h2 id="form-title">Проверка точки</h2>
@@ -118,6 +122,8 @@
                             id="y"
                             name="y"
                             required
+                            min="-3"
+                            max="3"
                             inputmode="decimal"
                             autocomplete="off"
                             placeholder="От -3 до 3"
@@ -148,6 +154,8 @@
                             id="r"
                             name="r"
                             required
+                            min="2"
+                            max="5"
                             inputmode="decimal"
                             pattern="[0-9]+([.,][0-9]+)?"
                             autocomplete="off"

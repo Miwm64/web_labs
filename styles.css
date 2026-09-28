@@ -18,23 +18,24 @@
 
 #page-title {
     margin: 0 0 0.4rem;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     text-align: center;
 }
 
 #student-info {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-auto-flow: column;
     justify-content: center;
     gap: 0.2rem 0.35rem;
     margin: 0;
     font-family: var(--font-cursive);
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     color: var(--color-muted);
 }
 
 .student-info-item {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
     gap: 0.35rem;
 }
 
@@ -85,15 +86,16 @@
 
 .form-head {
     position: relative;
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
     align-items: center;
     gap: 0.4rem;
     margin-bottom: 0.5rem;
 }
 
-.form-legend,
 .form-label {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -141,7 +143,7 @@
     max-width: 20rem;
     margin: 0;
     padding: 0.5rem 0.6rem;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     line-height: 1.35;
     color: var(--color-surface);
     background-color: var(--color-text);
@@ -196,23 +198,24 @@
 }
 
 .checkbox-item {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
 }
 
 .checkbox-item > label {
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
 }
 
 input {
     width: calc(100% - 4%);
     margin: 1% 2%;
-    padding: 0.6rem 0.8rem;
+    padding: 2% 3%;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     color: var(--color-text);
     border: 1px solid var(--color-border);
     border-radius: 4px;
@@ -270,7 +273,7 @@ input[data-invalid="true"] {
 .button {
     padding: 0.7rem 1.6rem;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-surface);
     border: 0;
@@ -280,7 +283,7 @@ input[data-invalid="true"] {
 }
 
 .button:hover {
-    background-color: #163a5a;
+    background-color: var(--color-accent-strong);
 }
 
 @media (max-width: 900px) {
@@ -291,7 +294,7 @@ input[data-invalid="true"] {
 
 #coordinate-plane {
     width: 100%;
-    max-width: 500px;
+
     border: 1px solid black;
     border-radius: 10px;
     aspect-ratio: 1 / 1;
@@ -323,10 +326,9 @@ input[data-invalid="true"] {
 }
 
 .results-head {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.8rem;
 }
@@ -348,6 +350,7 @@ input[data-invalid="true"] {
 #results-table th,
 #results-table td {
     padding: 0.5rem 0.8rem;
+    font-size: 1.2rem;
     text-align: left;
     border-bottom: 1px solid var(--color-border);
 }
@@ -382,10 +385,7 @@ td[data-hit="false"] {
     background-color: rgb(0 0 0 / 40%);
 }
 
-.confirm-dialog:focus {
-    outline: none;
-}
-
+.confirm-dialog:focus,
 #clear-button:focus {
     outline: none;
 }
@@ -399,14 +399,14 @@ td[data-hit="false"] {
 
 .confirm-dialog-text {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-text);
 }
 
 .confirm-dialog-hint {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: var(--color-muted);
 }
 
