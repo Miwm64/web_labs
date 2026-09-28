@@ -146,5 +146,23 @@ function clearResults() {
 const RESULTS_API = { isHit, getResults, addResult, clearResults };
 Object.assign(window, RESULTS_API);
 
+const TIMEZONE_POLL_MS = 1000;
+
+function currentTimeZoneKey() {
+    const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
+    return `${timeZone}|${new Date().getTimezoneOffset()}`;
+}
+
+function watchTimeZone() {
+    let lastKey = currentTimeZoneKey();
+    setInterval(() => {
+        const key = currentTimeZoneKey();
+        if (key !== lastKey) {
+            lastKey = key;
+            renderResults();
+        }
+    }, TIMEZONE_POLL_MS);
+}
+
 renderResults();
-window.addEventListener("focus", renderResults);
+watchTimeZone();
