@@ -292,6 +292,11 @@ input[data-invalid="true"] {
     }
 }
 
+#plane-figure {
+    width: 100%;
+    margin: 0;
+}
+
 #coordinate-plane {
     width: 100%;
 
