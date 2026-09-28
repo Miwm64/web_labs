@@ -1,12 +1,6 @@
-# Whitelist: deny everything, then re-allow only the files the site needs.
-# This keeps `COPY .` in the Dockerfile safe by construction, so no future
-# .env, credential or local config can leak into the published web root.
 *
-
-# Web server config, copied to /etc/nginx by the Dockerfile.
 !nginx.conf
-
-# Site files.
 !index.html
 !styles.css
 !src/
+!font/
