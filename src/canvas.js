@@ -1,7 +1,9 @@
+const CANVAS_ID = "coordinate-plane";
+const BOLD_LABEL_FONT = "bold 12px sans-serif";
+
 const AXIS_COLOR = "rgb(0 0 0)";
 const ARROW_LENGTH = 12;
 const ARROW_WIDTH = 8;
-const LABEL_FONT = "bold 12px sans-serif";
 
 function draw_arrow(ctx, fromX, fromY, toX, toY) {
     const angle = Math.atan2(toY - fromY, toX - fromX);
@@ -29,10 +31,9 @@ function draw_arrow(ctx, fromX, fromY, toX, toY) {
 }
 
 function draw_canvas() {
-    const canvas = document.getElementById("coordinate-plane");
+    const canvas = document.getElementById(CANVAS_ID);
     const rect = canvas.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
+    const { width, height } = rect;
 
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(255 255 255)";
@@ -45,7 +46,7 @@ function draw_canvas() {
     draw_arrow(ctx, centerX, height, centerX, 0);
 
     ctx.fillStyle = AXIS_COLOR;
-    ctx.font = LABEL_FONT;
+    ctx.font = BOLD_LABEL_FONT;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("X", width - ARROW_LENGTH / 2 - width / 200, centerY - ARROW_LENGTH);
@@ -53,7 +54,7 @@ function draw_canvas() {
 }
 
 function resizeCanvas() {
-    const canvas = document.getElementById("coordinate-plane");
+    const canvas = document.getElementById(CANVAS_ID);
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
@@ -64,8 +65,6 @@ function resizeCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-const CANVAS_ID = "coordinate-plane";
-
 const PLANE_MIN = -5.5;
 const PLANE_MAX = 5.5;
 const PLANE_SPAN = PLANE_MAX - PLANE_MIN;
@@ -75,10 +74,10 @@ let currentRadius = DEFAULT_RADIUS;
 let areaVisible = false;
 
 const FULL_TURN = Math.PI * 2;
-const DOT_RADIUS = 3;
-const DOT_COLOR = "rgb(255 140 0)";
+const DOT_RADIUS = 6;
+const DOT_COLOR = "rgb(214 40 40)";
 const DOT_BORDER_COLOR = "rgb(255 255 255)";
-const DOT_BORDER_WIDTH = 1;
+const DOT_BORDER_WIDTH = 2;
 const DOT_CLEAR_PADDING = 1;
 
 const plottedDots = [];
@@ -105,11 +104,14 @@ function draw_dot(x, y) {
     const rect = canvas.getBoundingClientRect();
     const ctx = canvas.getContext("2d");
 
+    const cx = Math.round(toPixelX(x, rect.width)) + 0.5;
+    const cy = Math.round(toPixelY(y, rect.height)) + 0.5;
+
     ctx.fillStyle = DOT_COLOR;
     ctx.strokeStyle = DOT_BORDER_COLOR;
     ctx.lineWidth = DOT_BORDER_WIDTH;
     ctx.beginPath();
-    ctx.arc(toPixelX(x, rect.width), toPixelY(y, rect.height), DOT_RADIUS, 0, FULL_TURN);
+    ctx.arc(cx, cy, DOT_RADIUS, 0, FULL_TURN);
     ctx.fill();
     ctx.stroke();
 
@@ -175,7 +177,6 @@ const TICK_STROKE_WIDTH = 1;
 const HALF_DIVISOR = 2;
 const HALF_PIXEL = 0.5;
 
-const TICK_LABEL_FONT = "bold 12px sans-serif";
 const TICK_LABEL_COLOR = "rgb(31 41 55)";
 const TICK_LABEL_GAP = 5;
 const R_LABEL = "R";
@@ -216,7 +217,7 @@ function draw_tick_labels(r, ctx, originX, originY, width, height) {
     const ticks = tickValues(r);
 
     ctx.fillStyle = TICK_LABEL_COLOR;
-    ctx.font = TICK_LABEL_FONT;
+    ctx.font = BOLD_LABEL_FONT;
 
     ctx.textAlign = "center";
     ctx.textBaseline = "top";

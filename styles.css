@@ -91,7 +91,6 @@
     margin-bottom: 0.5rem;
 }
 
-.form-legend,
 .form-label {
     font-size: 1.1rem;
     font-weight: 600;
@@ -141,7 +140,7 @@
     max-width: 20rem;
     margin: 0;
     padding: 0.5rem 0.6rem;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     line-height: 1.35;
     color: var(--color-surface);
     background-color: var(--color-text);
@@ -203,7 +202,7 @@
 }
 
 .checkbox-item > label {
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
 }
 
@@ -212,7 +211,7 @@ input {
     margin: 1% 2%;
     padding: 0.6rem 0.8rem;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     color: var(--color-text);
     border: 1px solid var(--color-border);
     border-radius: 4px;
@@ -280,7 +279,7 @@ input[data-invalid="true"] {
 }
 
 .button:hover {
-    background-color: #163a5a;
+    background-color: var(--color-accent-strong);
 }
 
 @media (max-width: 900px) {
@@ -348,6 +347,7 @@ input[data-invalid="true"] {
 #results-table th,
 #results-table td {
     padding: 0.5rem 0.8rem;
+    font-size: 1.05rem;
     text-align: left;
     border-bottom: 1px solid var(--color-border);
 }
@@ -382,10 +382,7 @@ td[data-hit="false"] {
     background-color: rgb(0 0 0 / 40%);
 }
 
-.confirm-dialog:focus {
-    outline: none;
-}
-
+.confirm-dialog:focus,
 #clear-button:focus {
     outline: none;
 }
