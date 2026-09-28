@@ -6,6 +6,7 @@
         <title>Лабораторная работа №1 — Проверка попадания точки в область</title>
         <link rel="stylesheet" href="styles.css" />
         <script src="src/canvas.js" defer></script>
+        <script src="src/results.js" defer></script>
         <script src="src/form.js" defer></script>
     </head>
     <body>
@@ -159,5 +160,29 @@
                 </form>
             </section>
         </main>
+
+        <section id="results-panel" aria-labelledby="results-title">
+            <div class="results-head">
+                <h2 id="results-title">Результаты проверок</h2>
+                <button type="button" id="clear-button" class="button button-secondary">
+                    Очистить
+                </button>
+            </div>
+
+            <div class="results-scroll">
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">X</th>
+                            <th scope="col">Y</th>
+                            <th scope="col">R</th>
+                            <th scope="col">Результат</th>
+                            <th scope="col">Дата и время</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </section>
     </body>
 </html>

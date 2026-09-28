@@ -1,3 +1,6 @@
+/* global getResults, addResult, isHit, clearResults */
+// linter fix, as it is treating file in isolation
+
 const TYPING_PAUSE_MS = 100;
 const ALLOWED_CHARS = /[^0-9.,-]/g;
 
@@ -111,15 +114,21 @@ function watchField(input, limits, errorElement) {
     input.addEventListener("blur", check);
 }
 
+function drawStoredDots() {
+    for (const { x, y } of getResults()) {
+        draw_dot(x, y);
+    }
+}
+
 function redrawArea(raw) {
     clear_canvas();
     draw_canvas();
 
     const value = parseNumber(raw);
-    if (value === null || value < LIMITS.r.min || value > LIMITS.r.max) {
-        return;
+    if (value !== null && value >= LIMITS.r.min && value <= LIMITS.r.max) {
+        draw_plane(value);
     }
-    draw_plane(value);
+    drawStoredDots();
 }
 
 function initValidation() {
@@ -172,7 +181,20 @@ function initValidation() {
             return;
         }
 
+        const x = Number(xBoxes.find((box) => box.checked).value);
+        const y = parseNumber(yInput.value);
+        const r = parseNumber(rInput.value);
+
         redrawArea(rInput.value);
+        draw_dot(x, y);
+        addResult({ x, y, r, hit: isHit(x, y, r), timestamp: Date.now() });
+    });
+}
+
+function initClearButton() {
+    document.getElementById("clear-button").addEventListener("click", () => {
+        clear_dots();
+        clearResults();
     });
 }
 
@@ -214,12 +236,15 @@ function initTooltips() {
     });
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        initValidation();
-        initTooltips();
-    });
-} else {
+function init() {
     initValidation();
     initTooltips();
+    initClearButton();
+    drawStoredDots();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
 }
