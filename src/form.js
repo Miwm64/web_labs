@@ -116,7 +116,7 @@ function watchField(input, limits, errorElement) {
 // eslint-disable-next-line no-unused-vars
 function drawStoredDots() {
     for (const { x, y } of getResults()) {
-        draw_dot(x, y);
+        drawDot(x, y);
     }
 }
 
@@ -124,17 +124,17 @@ let lastPoint = null;
 
 function drawLastDot() {
     if (lastPoint !== null) {
-        draw_dot(lastPoint.x, lastPoint.y);
+        drawDot(lastPoint.x, lastPoint.y);
     }
 }
 
 function redrawArea(raw) {
-    clear_canvas();
-    draw_canvas();
+    clearCanvas();
+    drawCanvas();
 
     const value = parseNumber(raw);
     if (value !== null && value >= LIMITS.r.min && value <= LIMITS.r.max) {
-        draw_plane(value);
+        drawPlane(value);
     }
     drawLastDot();
 }
@@ -200,7 +200,7 @@ function initValidation() {
 }
 
 function doClear() {
-    clear_dots();
+    clearDots();
     clearResults();
     lastPoint = null;
 }

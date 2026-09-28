@@ -5,7 +5,7 @@ const AXIS_COLOR = "rgb(0 0 0)";
 const ARROW_LENGTH = 12;
 const ARROW_WIDTH = 8;
 
-function draw_arrow(ctx, fromX, fromY, toX, toY) {
+function drawArrow(ctx, fromX, fromY, toX, toY) {
     const angle = Math.atan2(toY - fromY, toX - fromX);
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -30,7 +30,7 @@ function draw_arrow(ctx, fromX, fromY, toX, toY) {
     ctx.fill();
 }
 
-function draw_canvas() {
+function drawCanvas() {
     const canvas = document.getElementById(CANVAS_ID);
     const rect = canvas.getBoundingClientRect();
     const { width, height } = rect;
@@ -42,8 +42,8 @@ function draw_canvas() {
     const centerX = Math.floor(width / 2) + 0.5;
     const centerY = Math.floor(height / 2) + 0.5;
 
-    draw_arrow(ctx, 0, centerY, width, centerY);
-    draw_arrow(ctx, centerX, height, centerX, 0);
+    drawArrow(ctx, 0, centerY, width, centerY);
+    drawArrow(ctx, centerX, height, centerX, 0);
 
     ctx.fillStyle = AXIS_COLOR;
     ctx.font = BOLD_LABEL_FONT;
@@ -90,7 +90,7 @@ function toPixelY(value, height) {
     return ((PLANE_MAX - value) / PLANE_SPAN) * height;
 }
 
-function draw_dot(x, y) {
+function drawDot(x, y) {
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
         throw new TypeError("Point coordinates must be finite numbers");
     }
@@ -141,7 +141,7 @@ function fillAndStroke(ctx, fill, stroke) {
     ctx.stroke();
 }
 
-function draw_square(r, ctx, originX, originY, width, height) {
+function drawSquare(r, ctx, originX, originY, width, height) {
     const left = Math.min(toPixelX(-r, width), originX);
     const right = Math.max(toPixelX(-r, width), originX);
     const top = Math.min(toPixelY(r, height), originY);
@@ -152,7 +152,7 @@ function draw_square(r, ctx, originX, originY, width, height) {
     fillAndStroke(ctx, SQUARE_FILL, SQUARE_STROKE);
 }
 
-function draw_quarter_disc(r, ctx, originX, originY, width) {
+function drawQuarterDisc(r, ctx, originX, originY, width) {
     const radius = Math.abs(r / DISC_RADIUS_DIVISOR) * pixelsPerUnit(width);
 
     ctx.beginPath();
@@ -162,7 +162,7 @@ function draw_quarter_disc(r, ctx, originX, originY, width) {
     fillAndStroke(ctx, DISC_FILL, DISC_STROKE);
 }
 
-function draw_triangle(r, ctx, originX, originY, width, height) {
+function drawTriangle(r, ctx, originX, originY, width, height) {
     ctx.beginPath();
     ctx.moveTo(originX, originY);
     ctx.lineTo(toPixelX(r, width), originY);
@@ -192,7 +192,7 @@ function tickValues(r) {
     ];
 }
 
-function draw_ticks(r, ctx, originX, originY, width, height) {
+function drawTicks(r, ctx, originX, originY, width, height) {
     const half = TICK_LENGTH / 2;
     const lastColumn = width - 1;
     const lastRow = height - 1;
@@ -212,7 +212,7 @@ function draw_ticks(r, ctx, originX, originY, width, height) {
     ctx.stroke();
 }
 
-function draw_tick_labels(r, ctx, originX, originY, width, height) {
+function drawTickLabels(r, ctx, originX, originY, width, height) {
     const offset = TICK_LENGTH / 2 + TICK_LABEL_GAP;
     const ticks = tickValues(r);
 
@@ -232,15 +232,15 @@ function draw_tick_labels(r, ctx, originX, originY, width, height) {
     }
 }
 
-function paint_plane(r, ctx, originX, originY, width, height) {
-    draw_square(r, ctx, originX, originY, width, height);
-    draw_quarter_disc(r, ctx, originX, originY, width);
-    draw_triangle(r, ctx, originX, originY, width, height);
-    draw_ticks(r, ctx, originX, originY, width, height);
-    draw_tick_labels(r, ctx, originX, originY, width, height);
+function paintPlane(r, ctx, originX, originY, width, height) {
+    drawSquare(r, ctx, originX, originY, width, height);
+    drawQuarterDisc(r, ctx, originX, originY, width);
+    drawTriangle(r, ctx, originX, originY, width, height);
+    drawTicks(r, ctx, originX, originY, width, height);
+    drawTickLabels(r, ctx, originX, originY, width, height);
 }
 
-function draw_plane(r) {
+function drawPlane(r) {
     if (!Number.isFinite(r)) {
         throw new TypeError("Radius must be a finite number");
     }
@@ -260,10 +260,10 @@ function draw_plane(r) {
     currentRadius = r;
     areaVisible = true;
 
-    paint_plane(r, ctx, originX, originY, width, height);
+    paintPlane(r, ctx, originX, originY, width, height);
 }
 
-function clear_canvas() {
+function clearCanvas() {
     const canvas = document.getElementById(CANVAS_ID);
     const { width, height } = canvas.getBoundingClientRect();
 
@@ -272,7 +272,7 @@ function clear_canvas() {
     areaVisible = false;
 }
 
-function clear_dots() {
+function clearDots() {
     if (plottedDots.length === 0) {
         return;
     }
@@ -296,9 +296,9 @@ function clear_dots() {
         ctx.beginPath();
         ctx.rect(left, top, size, size);
         ctx.clip();
-        draw_canvas();
+        drawCanvas();
         if (areaVisible) {
-            paint_plane(dot.radius, ctx, originX, originY, width, height);
+            paintPlane(dot.radius, ctx, originX, originY, width, height);
         }
         ctx.restore();
     }
@@ -306,19 +306,19 @@ function clear_dots() {
     plottedDots.length = 0;
 }
 
-const PUBLIC_API = { draw_plane, draw_dot, clear_canvas, clear_dots };
+const PUBLIC_API = { drawPlane, drawDot, clearCanvas, clearDots };
 Object.assign(window, PUBLIC_API);
 
 function render() {
     resizeCanvas();
-    draw_canvas();
+    drawCanvas();
     if (areaVisible) {
-        draw_plane(currentRadius);
+        drawPlane(currentRadius);
     }
 
     const dots = plottedDots.splice(0);
     for (const { x, y } of dots) {
-        draw_dot(x, y);
+        drawDot(x, y);
     }
 }
 
