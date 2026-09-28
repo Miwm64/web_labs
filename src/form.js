@@ -1,5 +1,4 @@
 /* global getResults, addResult, isHit, clearResults */
-// linter fix, as it is treating file in isolation
 
 const TYPING_PAUSE_MS = 100;
 const ALLOWED_CHARS = /[^0-9.,-]/g;
@@ -114,9 +113,18 @@ function watchField(input, limits, errorElement) {
     input.addEventListener("blur", check);
 }
 
+// eslint-disable-next-line no-unused-vars
 function drawStoredDots() {
     for (const { x, y } of getResults()) {
         draw_dot(x, y);
+    }
+}
+
+let lastPoint = null;
+
+function drawLastDot() {
+    if (lastPoint !== null) {
+        draw_dot(lastPoint.x, lastPoint.y);
     }
 }
 
@@ -128,7 +136,7 @@ function redrawArea(raw) {
     if (value !== null && value >= LIMITS.r.min && value <= LIMITS.r.max) {
         draw_plane(value);
     }
-    drawStoredDots();
+    drawLastDot();
 }
 
 function initValidation() {
@@ -185,16 +193,29 @@ function initValidation() {
         const y = parseNumber(yInput.value);
         const r = parseNumber(rInput.value);
 
-        redrawArea(rInput.value);
-        draw_dot(x, y);
         addResult({ x, y, r, hit: isHit(x, y, r), timestamp: Date.now() });
+        lastPoint = { x, y };
+        redrawArea(rInput.value);
     });
 }
 
+function doClear() {
+    clear_dots();
+    clearResults();
+    lastPoint = null;
+}
+
 function initClearButton() {
+    const dialog = document.getElementById("clear-dialog");
+
     document.getElementById("clear-button").addEventListener("click", () => {
-        clear_dots();
-        clearResults();
+        dialog.showModal();
+    });
+
+    dialog.addEventListener("close", () => {
+        if (dialog.returnValue === "confirm") {
+            doClear();
+        }
     });
 }
 
@@ -240,7 +261,6 @@ function init() {
     initValidation();
     initTooltips();
     initClearButton();
-    drawStoredDots();
 }
 
 if (document.readyState === "loading") {
