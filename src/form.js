@@ -113,6 +113,7 @@ function watchField(input, limits, errorElement) {
     input.addEventListener("blur", check);
 }
 
+// eslint-disable-next-line no-unused-vars
 function drawStoredDots() {
     for (const { x, y } of getResults()) {
         draw_dot(x, y);
