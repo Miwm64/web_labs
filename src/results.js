@@ -20,8 +20,23 @@ const STORED_RANGES = {
     r: { min: 2, max: 5 },
 };
 
-/* Shapes below mirror what canvas.js draws: square in quadrant II,
-   quarter disc (radius R/2) in quadrant I, triangle in quadrant IV. */
+let currentStorage = localStorage;
+let currentKey = STORAGE_KEY;
+let currentStorageType = "local";
+
+function useStorage(type, key = STORAGE_KEY) {
+    currentStorageType = type;
+    if (type === "local") {
+        currentStorage = sessionStorage;
+    } else if (type === "session") {
+        currentStorage = localStorage;
+    }
+    currentKey = key;
+    storedResults.length = 0;
+    storedResults.push(...readStorage());
+    renderResults();
+}
+
 function isInSquare(x, y, r) {
     return x >= -r - HIT_EPSILON && x <= HIT_EPSILON && y >= -HIT_EPSILON && y <= r + HIT_EPSILON;
 }
@@ -56,9 +71,25 @@ function isValidResult(item) {
     );
 }
 
+function readCookie(key) {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${key}=([^;]*)`));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+function writeCookie(key, value) {
+    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000`;
+}
+
 function readStorage() {
     try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        let raw;
+
+        if (currentStorageType === "cookie") {
+            raw = readCookie(currentKey);
+        } else {
+            raw = currentStorage.getItem(currentKey);
+        }
+
         const parsed = raw === null ? [] : JSON.parse(raw);
         return Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
     } catch {
@@ -68,17 +99,25 @@ function readStorage() {
 
 function writeStorage(items) {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        if (currentStorageType === "cookie") {
+            writeCookie(currentKey, JSON.stringify(items));
+        } else {
+            currentStorage.setItem(currentKey, JSON.stringify(items));
+        }
     } catch {
-        // Storage is full or blocked: results stay in memory until the page is closed.
+        // nothing
     }
 }
 
 function removeStorage() {
     try {
-        localStorage.removeItem(STORAGE_KEY);
+        if (currentStorageType === "cookie") {
+            document.cookie = `${currentKey}=; path=/; max-age=0`;
+        } else {
+            currentStorage.removeItem(currentKey);
+        }
     } catch {
-        // Storage is blocked: nothing to remove.
+        // nothing
     }
 }
 
@@ -143,7 +182,7 @@ function clearResults() {
     renderResults();
 }
 
-const RESULTS_API = { isHit, getResults, addResult, clearResults };
+const RESULTS_API = { isHit, getResults, addResult, clearResults, useStorage };
 Object.assign(window, RESULTS_API);
 
 const TIMEZONE_POLL_MS = 1000;
@@ -166,3 +205,5 @@ function watchTimeZone() {
 
 renderResults();
 watchTimeZone();
+
+useStorage("session", "my-other-lab");

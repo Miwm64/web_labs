@@ -160,6 +160,20 @@ function initValidation() {
         });
     }
 
+    yInput.addEventListener("change", () => {
+        const value = yInput.value;
+        if (value % 2 === 0) {
+            yInput.style.backgroundColor = "green";
+        } else {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            yInput.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        event.preventDefault();
+    });
+
     restrictInput(yInput, true);
     restrictInput(rInput, false);
     watchField(yInput, LIMITS.y, yError);
