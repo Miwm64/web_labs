@@ -332,7 +332,7 @@ input[data-invalid="true"] {
 
 .results-head {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
     gap: 1rem;
     margin-bottom: 0.8rem;

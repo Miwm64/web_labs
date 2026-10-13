@@ -1,4 +1,4 @@
-/* global getResults, addPoint, deleteResults */
+/* global getResults, addPoint, deleteResults, refreshSync */
 
 const TYPING_PAUSE_MS = 100;
 const ALLOWED_CHARS = /[^0-9.,-]/g;
@@ -247,6 +247,27 @@ function initClearButton() {
     });
 }
 
+function initRefreshButton() {
+    const button = document.getElementById("refresh-button");
+    const resultsError = document.getElementById("results-error");
+
+    button.addEventListener("click", async () => {
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+        try {
+            await refreshSync();
+            setError(resultsError, "");
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                setError(resultsError, error.message);
+            }
+        } finally {
+            button.disabled = false;
+            button.removeAttribute("aria-busy");
+        }
+    });
+}
+
 function initTooltips() {
     const tips = Array.from(document.querySelectorAll(".info-button")).map((button) => ({
         button,
@@ -289,6 +310,7 @@ function init() {
     initValidation();
     initTooltips();
     initClearButton();
+    initRefreshButton();
 }
 
 if (document.readyState === "loading") {

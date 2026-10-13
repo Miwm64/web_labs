@@ -19,8 +19,8 @@ function wait(ms, signal) {
     });
 }
 
-async function runSync(signal) {
-    let version = null;
+async function runSync(signal, startVersion) {
+    let version = startVersion;
     let retryMs = RETRY_MIN_MS;
 
     while (!signal.aborted) {
@@ -49,10 +49,27 @@ function stopSync() {
     }
 }
 
-function startSync() {
+async function refreshSync() {
     stopSync();
-    syncController = new AbortController();
-    runSync(syncController.signal);
+    const controller = new AbortController();
+    syncController = controller;
+
+    let version = null;
+    try {
+        const data = await fetchResults(controller.signal);
+        version = data.version;
+        setResults(data.results);
+    } finally {
+        if (!controller.signal.aborted) {
+            runSync(controller.signal, version);
+        }
+    }
+}
+
+function startSync() {
+    refreshSync().catch(() => {
+        // ignore
+    });
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -63,7 +80,7 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
-const SYNC_API = { startSync, stopSync };
+const SYNC_API = { startSync, stopSync, refreshSync };
 Object.assign(window, SYNC_API);
 
 startSync();
