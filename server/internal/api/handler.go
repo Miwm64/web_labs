@@ -4,10 +4,17 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/Miwm64/web_labs/server/internal/store"
 )
 
 type Handler struct {
+	store       store.Store
 	pollTimeout time.Duration
+}
+
+func New(s store.Store, pollTimeout time.Duration) *Handler {
+	return &Handler{store: s, pollTimeout: pollTimeout}
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -32,12 +39,20 @@ func (h *Handler) results(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func New(pollTimeout time.Duration) *Handler {
-	return &Handler{pollTimeout: pollTimeout}
-}
-
 func (h *Handler) getResults(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Get")
+	start := time.Now()
+
+	stored, version := h.store.List()
+	results := make([]resultJSON, 0, len(stored))
+	for _, result := range stored {
+		results = append(results, toJSON(result))
+	}
+
+	writeJSON(w, http.StatusOK, listResponse{
+		Results: results,
+		Version: version,
+		timing:  timingSince(start),
+	})
 }
 
 func (h *Handler) postResults(w http.ResponseWriter, r *http.Request) {

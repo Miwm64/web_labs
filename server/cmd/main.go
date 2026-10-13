@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/Miwm64/web_labs/server/internal/api"
+	"github.com/Miwm64/web_labs/server/internal/store/memory"
+
 	"log"
 	"net"
 	"net/http/fcgi"
@@ -14,7 +16,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	h := api.New(25 * time.Second)
-
+	h := api.New(memory.New(1000), 25*time.Second)
+	
 	log.Fatal(fcgi.Serve(listener, h))
 }
