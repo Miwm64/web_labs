@@ -77,7 +77,7 @@ async function refreshSync() {
         applyData(data);
     } finally {
         if (!controller.signal.aborted) {
-            runSync(controller.signal, version);
+            void runSync(controller.signal, version);
         }
     }
 }
