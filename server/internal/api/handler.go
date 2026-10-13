@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"mime"
 	"net/http"
 	"time"
