@@ -1,4 +1,4 @@
-const STORAGE_KEY = "web-lab1:results";
+/* global useStorage, readStorage, writeStorage, removeStorage */
 
 const HIT_EPSILON = 1e-9;
 const HIT_DISC_DIVISOR = 2;
@@ -54,74 +54,12 @@ function isValidResult(item) {
     );
 }
 
-const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365;
-
-function setCookie(key, value, maxAge) {
-    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`;
-}
-
-function webStorage(getStorage) {
-    return {
-        read: (key) => getStorage().getItem(key),
-        write: (key, value) => getStorage().setItem(key, value),
-        remove: (key) => getStorage().removeItem(key),
-    };
-}
-
-const STORAGE_BACKENDS = {
-    local: webStorage(() => localStorage),
-    session: webStorage(() => sessionStorage),
-    cookie: {
-        read(key) {
-            const prefix = `${encodeURIComponent(key)}=`;
-            const entry = document.cookie.split("; ").find((part) => part.startsWith(prefix));
-            return entry === undefined ? null : decodeURIComponent(entry.slice(prefix.length));
-        },
-        write: (key, value) => setCookie(key, value, COOKIE_MAX_AGE_S),
-        remove: (key) => setCookie(key, "", 0),
-    },
-};
-
-const storage = { backend: STORAGE_BACKENDS.local, key: STORAGE_KEY };
-
-function readStorage() {
-    try {
-        const raw = storage.backend.read(storage.key);
-        const parsed = raw === null ? [] : JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
-    } catch {
-        return [];
-    }
-}
-
-function writeStorage(items) {
-    try {
-        storage.backend.write(storage.key, JSON.stringify(items));
-    } catch {
-        // ignore
-    }
-}
-
-function removeStorage() {
-    try {
-        storage.backend.remove(storage.key);
-    } catch {
-        // ignore
-    }
-}
-
 const storedResults = [];
 
-function useStorage(type, key = STORAGE_KEY) {
-    const backend = STORAGE_BACKENDS[type];
-    if (backend === undefined) {
-        throw new Error(
-            `Unknown storage type "${type}", expected one of: ${Object.keys(STORAGE_BACKENDS).join(", ")}`
-        );
-    }
-    storage.backend = backend;
-    storage.key = key;
-    storedResults.splice(0, storedResults.length, ...readStorage());
+function loadStoredResults() {
+    const parsed = readStorage();
+    const valid = Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
+    storedResults.splice(0, storedResults.length, ...valid);
     renderResults();
 }
 
@@ -184,7 +122,7 @@ function clearResults() {
     renderResults();
 }
 
-const RESULTS_API = { isHit, getResults, addResult, clearResults, useStorage };
+const RESULTS_API = { isHit, getResults, addResult, clearResults };
 Object.assign(window, RESULTS_API);
 
 const TIMEZONE_POLL_MS = 1000;
@@ -206,4 +144,5 @@ function watchTimeZone() {
 }
 
 useStorage("cookie", "my-other-lab");
+loadStoredResults();
 watchTimeZone();
