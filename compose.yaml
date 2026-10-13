@@ -14,4 +14,4 @@ services:
         image: web-lab2-server:local
         container_name: web-lab2-server
         ports:
-          - "9000:9000"
+            - "9000:9000"
