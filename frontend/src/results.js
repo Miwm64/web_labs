@@ -1,5 +1,3 @@
-/* global useStorage, readStorage, writeStorage, removeStorage */
-
 const HIT_EPSILON = 1e-9;
 const HIT_DISC_DIVISOR = 2;
 
@@ -12,12 +10,6 @@ const DATE_OPTIONS = {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-};
-
-const STORED_RANGES = {
-    x: { min: -4, max: 4 },
-    y: { min: -3, max: 3 },
-    r: { min: 2, max: 5 },
 };
 
 function isInSquare(x, y, r) {
@@ -37,29 +29,10 @@ function isHit(x, y, r) {
     return isInSquare(x, y, r) || isInQuarterDisc(x, y, r) || isInTriangle(x, y, r);
 }
 
-function inRange(value, { min, max }) {
-    return Number.isFinite(value) && value >= min && value <= max;
-}
-
-function isValidResult(item) {
-    return (
-        item !== null &&
-        typeof item === "object" &&
-        inRange(item.x, STORED_RANGES.x) &&
-        inRange(item.y, STORED_RANGES.y) &&
-        inRange(item.r, STORED_RANGES.r) &&
-        typeof item.hit === "boolean" &&
-        Number.isFinite(item.timestamp) &&
-        !Number.isNaN(new Date(item.timestamp).getTime())
-    );
-}
-
 const storedResults = [];
 
-function loadStoredResults() {
-    const parsed = readStorage();
-    const valid = Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
-    storedResults.splice(0, storedResults.length, ...valid);
+function setResults(results) {
+    storedResults.splice(0, storedResults.length, ...results);
     renderResults();
 }
 
@@ -112,17 +85,15 @@ function renderResults() {
 
 function addResult(result) {
     storedResults.push(result);
-    writeStorage(storedResults);
     renderResults();
 }
 
 function clearResults() {
     storedResults.length = 0;
-    removeStorage();
     renderResults();
 }
 
-const RESULTS_API = { isHit, getResults, addResult, clearResults };
+const RESULTS_API = { isHit, getResults, setResults, addResult, clearResults };
 Object.assign(window, RESULTS_API);
 
 const TIMEZONE_POLL_MS = 1000;
@@ -143,6 +114,5 @@ function watchTimeZone() {
     }, TIMEZONE_POLL_MS);
 }
 
-useStorage("cookie", "my-other-lab");
-loadStoredResults();
+renderResults();
 watchTimeZone();
