@@ -1,6 +1,4 @@
 *
-!nginx.conf
-!index.html
-!styles.css
-!src/
-!font/
+!httpd.conf
+!frontend/
+!server/

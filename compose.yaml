@@ -1,9 +1,17 @@
 services:
-    web:
+    web-apache:
         build:
             context: .
-        image: web-lab1:local
-        container_name: web-lab1
+        image: web-lab2-apache:local
+        container_name: web-lab2-apache
         ports:
             - "8080:8080"
         restart: unless-stopped
+
+    server:
+        build:
+            context: ./server
+        image: web-lab2-server:local
+        container_name: web-lab2-server
+        ports:
+            - "9000:9000"
