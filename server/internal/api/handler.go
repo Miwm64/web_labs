@@ -1,8 +1,10 @@
 package api
 
 import (
+	"context"
 	"mime"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Miwm64/web_labs/server/internal/area"
@@ -42,8 +44,38 @@ func (h *Handler) results(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getResults(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
+	if r.URL.Query().Has("since") {
+		h.pollResults(w, r)
+		return
+	}
+	h.writeList(w, time.Now())
+}
 
+func (h *Handler) pollResults(w http.ResponseWriter, r *http.Request) {
+	since, err := strconv.ParseUint(r.URL.Query().Get("since"), 10, 64)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, errorResponse{
+			Errors: map[string]string{"_": "Некорректная версия."},
+		})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), h.pollTimeout)
+	defer cancel()
+
+	if !h.store.Wait(ctx, since) {
+		if r.Context().Err() != nil {
+			return
+		}
+		w.Header().Set("Cache-Control", "no-store")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	h.writeList(w, time.Now())
+}
+
+func (h *Handler) writeList(w http.ResponseWriter, start time.Time) {
 	stored, version := h.store.List()
 	results := make([]resultJSON, 0, len(stored))
 	for _, result := range stored {
