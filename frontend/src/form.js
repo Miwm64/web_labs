@@ -1,4 +1,4 @@
-/* global getResults, addPoint, deleteResults, refreshSync */
+/* global getResults, setServerInfo, addPoint, deleteResults, refreshSync */
 
 const TYPING_PAUSE_MS = 100;
 const ALLOWED_CHARS = /[^0-9.,-]/g;
@@ -209,7 +209,7 @@ function initValidation() {
         submitButton.disabled = true;
         submitButton.setAttribute("aria-busy", "true");
         try {
-            await addPoint({ x, y, r });
+            setServerInfo(await addPoint({ x, y, r }));
             lastPoint = { x: Number(x), y: Number(y) };
             redrawArea(rInput.value);
         } catch (error) {
@@ -223,7 +223,7 @@ function initValidation() {
 
 async function doClear(errorElement) {
     try {
-        await deleteResults();
+        setServerInfo(await deleteResults());
         clearDots();
         lastPoint = null;
         setError(errorElement, "");
@@ -266,6 +266,13 @@ function initRefreshButton() {
             button.removeAttribute("aria-busy");
         }
     });
+}
+
+function initSyncStatus() {
+    const resultsError = document.getElementById("results-error");
+
+    document.addEventListener("sync-error", (event) => setError(resultsError, event.detail));
+    document.addEventListener("sync-ok", () => setError(resultsError, ""));
 }
 
 function initTooltips() {
@@ -311,6 +318,7 @@ function init() {
     initTooltips();
     initClearButton();
     initRefreshButton();
+    initSyncStatus();
 }
 
 if (document.readyState === "loading") {

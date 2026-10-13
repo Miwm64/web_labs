@@ -9,7 +9,15 @@ const DATE_OPTIONS = {
     second: "2-digit",
 };
 
+const DURATION_UNITS = [
+    [1e9, "с"],
+    [1e6, "мс"],
+    [1e3, "мкс"],
+    [1, "нс"],
+];
+
 const storedResults = [];
+let serverInfo = null;
 
 function setResults(results) {
     storedResults.splice(0, storedResults.length, ...results);
@@ -18,6 +26,39 @@ function setResults(results) {
 
 function getResults() {
     return [...storedResults];
+}
+
+function createTime(timestamp) {
+    const date = new Date(timestamp);
+    const time = document.createElement("time");
+    time.dateTime = date.toISOString();
+    time.textContent = date.toLocaleString(DATE_LOCALE, DATE_OPTIONS);
+    return time;
+}
+
+function formatDuration(ns) {
+    const [size, unit] =
+        DURATION_UNITS.find(([unitSize]) => ns >= unitSize) ?? DURATION_UNITS.at(-1);
+    const value = (ns / size).toLocaleString(DATE_LOCALE, { maximumFractionDigits: 1 });
+    return `${value} ${unit}`;
+}
+
+function renderServerInfo() {
+    if (serverInfo === null) {
+        return;
+    }
+    const element = document.getElementById("server-info");
+    element.replaceChildren(
+        "Текущее время: ",
+        createTime(serverInfo.now),
+        ` · Время выполнения: ${formatDuration(serverInfo.elapsedNs)}`
+    );
+    element.hidden = false;
+}
+
+function setServerInfo({ now, elapsedNs }) {
+    serverInfo = { now, elapsedNs };
+    renderServerInfo();
 }
 
 function createRow({ x, y, r, hit, timestamp }) {
@@ -34,12 +75,8 @@ function createRow({ x, y, r, hit, timestamp }) {
     status.dataset.hit = String(hit);
     row.append(status);
 
-    const date = new Date(timestamp);
-    const time = document.createElement("time");
-    time.dateTime = date.toISOString();
-    time.textContent = date.toLocaleString(DATE_LOCALE, DATE_OPTIONS);
     const when = document.createElement("td");
-    when.append(time);
+    when.append(createTime(timestamp));
     row.append(when);
 
     return row;
@@ -63,7 +100,7 @@ function renderResults() {
     }
 }
 
-const RESULTS_API = { getResults, setResults };
+const RESULTS_API = { getResults, setResults, setServerInfo };
 Object.assign(window, RESULTS_API);
 
 const TIMEZONE_POLL_MS = 1000;
@@ -80,6 +117,7 @@ function watchTimeZone() {
         if (key !== lastKey) {
             lastKey = key;
             renderResults();
+            renderServerInfo();
         }
     }, TIMEZONE_POLL_MS);
 }

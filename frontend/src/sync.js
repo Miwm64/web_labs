@@ -1,4 +1,4 @@
-/* global fetchResults, pollResults, setResults */
+/* global fetchResults, pollResults, setResults, setServerInfo */
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 30000;
@@ -19,9 +19,19 @@ function wait(ms, signal) {
     });
 }
 
+function applyData(data) {
+    setResults(data.results);
+    setServerInfo(data);
+}
+
+function notify(type, detail) {
+    document.dispatchEvent(new CustomEvent(type, { detail }));
+}
+
 async function runSync(signal, startVersion) {
     let version = startVersion;
     let retryMs = RETRY_MIN_MS;
+    let failed = false;
 
     while (!signal.aborted) {
         try {
@@ -29,13 +39,19 @@ async function runSync(signal, startVersion) {
                 version === null ? await fetchResults(signal) : await pollResults(version, signal);
             if (data !== null) {
                 version = data.version;
-                setResults(data.results);
+                applyData(data);
             }
             retryMs = RETRY_MIN_MS;
+            if (failed) {
+                failed = false;
+                notify("sync-ok");
+            }
         } catch (error) {
             if (error.name === "AbortError") {
                 return;
             }
+            failed = true;
+            notify("sync-error", error.message);
             await wait(retryMs, signal);
             retryMs = Math.min(retryMs * 2, RETRY_MAX_MS);
         }
@@ -58,7 +74,7 @@ async function refreshSync() {
     try {
         const data = await fetchResults(controller.signal);
         version = data.version;
-        setResults(data.results);
+        applyData(data);
     } finally {
         if (!controller.signal.aborted) {
             runSync(controller.signal, version);

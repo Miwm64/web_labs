@@ -338,6 +338,12 @@ input[data-invalid="true"] {
     margin-bottom: 0.8rem;
 }
 
+.server-info {
+    margin: 0 0 0.8rem;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+}
+
 #results-title {
     margin: 0;
     font-size: 1.4rem;
