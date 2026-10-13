@@ -97,6 +97,12 @@ func (h *Handler) postResults(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *Handler) deleteResults(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Delete")
+func (h *Handler) deleteResults(w http.ResponseWriter, _ *http.Request) {
+	start := time.Now()
+
+	h.store.Clear()
+
+	writeJSON(w, http.StatusOK, clearResponse{
+		timing: timingSince(start),
+	})
 }
