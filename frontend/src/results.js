@@ -1,8 +1,3 @@
-const STORAGE_KEY = "web-lab1:results";
-
-const HIT_EPSILON = 1e-9;
-const HIT_DISC_DIVISOR = 2;
-
 const RESULT_COLUMNS = 5;
 const DATE_LOCALE = "ru-RU";
 const DATE_OPTIONS = {
@@ -14,119 +9,56 @@ const DATE_OPTIONS = {
     second: "2-digit",
 };
 
-const STORED_RANGES = {
-    x: { min: -4, max: 4 },
-    y: { min: -3, max: 3 },
-    r: { min: 2, max: 5 },
-};
-
-function isInSquare(x, y, r) {
-    return x >= -r - HIT_EPSILON && x <= HIT_EPSILON && y >= -HIT_EPSILON && y <= r + HIT_EPSILON;
-}
-
-function isInQuarterDisc(x, y, r) {
-    const radius = r / HIT_DISC_DIVISOR;
-    return x >= -HIT_EPSILON && y >= -HIT_EPSILON && x * x + y * y <= radius * radius + HIT_EPSILON;
-}
-
-function isInTriangle(x, y, r) {
-    return x >= -HIT_EPSILON && y <= HIT_EPSILON && x - y <= r + HIT_EPSILON;
-}
-
-function isHit(x, y, r) {
-    return isInSquare(x, y, r) || isInQuarterDisc(x, y, r) || isInTriangle(x, y, r);
-}
-
-function inRange(value, { min, max }) {
-    return Number.isFinite(value) && value >= min && value <= max;
-}
-
-function isValidResult(item) {
-    return (
-        item !== null &&
-        typeof item === "object" &&
-        inRange(item.x, STORED_RANGES.x) &&
-        inRange(item.y, STORED_RANGES.y) &&
-        inRange(item.r, STORED_RANGES.r) &&
-        typeof item.hit === "boolean" &&
-        Number.isFinite(item.timestamp) &&
-        !Number.isNaN(new Date(item.timestamp).getTime())
-    );
-}
-
-const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365;
-
-function setCookie(key, value, maxAge) {
-    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`;
-}
-
-function webStorage(getStorage) {
-    return {
-        read: (key) => getStorage().getItem(key),
-        write: (key, value) => getStorage().setItem(key, value),
-        remove: (key) => getStorage().removeItem(key),
-    };
-}
-
-const STORAGE_BACKENDS = {
-    local: webStorage(() => localStorage),
-    session: webStorage(() => sessionStorage),
-    cookie: {
-        read(key) {
-            const prefix = `${encodeURIComponent(key)}=`;
-            const entry = document.cookie.split("; ").find((part) => part.startsWith(prefix));
-            return entry === undefined ? null : decodeURIComponent(entry.slice(prefix.length));
-        },
-        write: (key, value) => setCookie(key, value, COOKIE_MAX_AGE_S),
-        remove: (key) => setCookie(key, "", 0),
-    },
-};
-
-const storage = { backend: STORAGE_BACKENDS.local, key: STORAGE_KEY };
-
-function readStorage() {
-    try {
-        const raw = storage.backend.read(storage.key);
-        const parsed = raw === null ? [] : JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
-    } catch {
-        return [];
-    }
-}
-
-function writeStorage(items) {
-    try {
-        storage.backend.write(storage.key, JSON.stringify(items));
-    } catch {
-        // ignore
-    }
-}
-
-function removeStorage() {
-    try {
-        storage.backend.remove(storage.key);
-    } catch {
-        // ignore
-    }
-}
+const DURATION_UNITS = [
+    [1e9, "с"],
+    [1e6, "мс"],
+    [1e3, "мкс"],
+    [1, "нс"],
+];
 
 const storedResults = [];
+let serverInfo = null;
 
-function useStorage(type, key = STORAGE_KEY) {
-    const backend = STORAGE_BACKENDS[type];
-    if (backend === undefined) {
-        throw new Error(
-            `Unknown storage type "${type}", expected one of: ${Object.keys(STORAGE_BACKENDS).join(", ")}`
-        );
-    }
-    storage.backend = backend;
-    storage.key = key;
-    storedResults.splice(0, storedResults.length, ...readStorage());
+function setResults(results) {
+    storedResults.splice(0, storedResults.length, ...results);
     renderResults();
 }
 
 function getResults() {
     return [...storedResults];
+}
+
+function createTime(timestamp) {
+    const date = new Date(timestamp);
+    const time = document.createElement("time");
+    time.dateTime = date.toISOString();
+    time.textContent = date.toLocaleString(DATE_LOCALE, DATE_OPTIONS);
+    return time;
+}
+
+function formatDuration(ns) {
+    const [size, unit] =
+        DURATION_UNITS.find(([unitSize]) => ns >= unitSize) ?? DURATION_UNITS.at(-1);
+    const value = (ns / size).toLocaleString(DATE_LOCALE, { maximumFractionDigits: 1 });
+    return `${value} ${unit}`;
+}
+
+function renderServerInfo() {
+    if (serverInfo === null) {
+        return;
+    }
+    const element = document.getElementById("server-info");
+    element.replaceChildren(
+        "Текущее время: ",
+        createTime(serverInfo.now),
+        ` · Время выполнения: ${formatDuration(serverInfo.elapsedNs)}`
+    );
+    element.hidden = false;
+}
+
+function setServerInfo({ now, elapsedNs }) {
+    serverInfo = { now, elapsedNs };
+    renderServerInfo();
 }
 
 function createRow({ x, y, r, hit, timestamp }) {
@@ -143,12 +75,8 @@ function createRow({ x, y, r, hit, timestamp }) {
     status.dataset.hit = String(hit);
     row.append(status);
 
-    const date = new Date(timestamp);
-    const time = document.createElement("time");
-    time.dateTime = date.toISOString();
-    time.textContent = date.toLocaleString(DATE_LOCALE, DATE_OPTIONS);
     const when = document.createElement("td");
-    when.append(time);
+    when.append(createTime(timestamp));
     row.append(when);
 
     return row;
@@ -172,19 +100,7 @@ function renderResults() {
     }
 }
 
-function addResult(result) {
-    storedResults.push(result);
-    writeStorage(storedResults);
-    renderResults();
-}
-
-function clearResults() {
-    storedResults.length = 0;
-    removeStorage();
-    renderResults();
-}
-
-const RESULTS_API = { isHit, getResults, addResult, clearResults, useStorage };
+const RESULTS_API = { getResults, setResults, setServerInfo };
 Object.assign(window, RESULTS_API);
 
 const TIMEZONE_POLL_MS = 1000;
@@ -201,9 +117,10 @@ function watchTimeZone() {
         if (key !== lastKey) {
             lastKey = key;
             renderResults();
+            renderServerInfo();
         }
     }, TIMEZONE_POLL_MS);
 }
 
-useStorage("cookie", "my-other-lab");
+renderResults();
 watchTimeZone();

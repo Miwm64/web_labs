@@ -1,4 +1,4 @@
-/* global getResults, addResult, isHit, clearResults */
+/* global getResults, setServerInfo, addPoint, deleteResults, refreshSync */
 
 const TYPING_PAUSE_MS = 100;
 const ALLOWED_CHARS = /[^0-9.,-]/g;
@@ -10,8 +10,12 @@ const LIMITS = {
 
 const X_REQUIRED = "Отметьте одно значение X.";
 
+function normalizeNumber(raw) {
+    return raw.trim().replace(",", ".");
+}
+
 function parseNumber(raw) {
-    const text = raw.trim().replace(",", ".");
+    const text = normalizeNumber(raw);
     if (text === "") {
         return null;
     }
@@ -147,6 +151,26 @@ function initValidation() {
     const xError = document.getElementById("x-error");
     const yError = document.getElementById("y-error");
     const rError = document.getElementById("r-error");
+    const formError = document.getElementById("form-error");
+    const submitButton = document.getElementById("submit-button");
+
+    const showErrors = (messages) => {
+        setError(xError, messages.x ?? "");
+        setError(yError, messages.y ?? "");
+        setError(rError, messages.r ?? "");
+        setError(formError, messages._ ?? "");
+        markInvalid(yInput, Boolean(messages.y));
+        markInvalid(rInput, Boolean(messages.r));
+
+        const first = [
+            [messages.x, xBoxes[0]],
+            [messages.y, yInput],
+            [messages.r, rInput],
+        ].find(([message]) => message);
+        first?.[1].focus();
+
+        return Object.values(messages).some(Boolean);
+    };
 
     for (const box of xBoxes) {
         box.addEventListener("change", () => {
@@ -166,57 +190,89 @@ function initValidation() {
     watchField(rInput, LIMITS.r, rError);
     rInput.addEventListener("input", () => redrawArea(rInput.value));
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const xMessage = xBoxes.some((box) => box.checked) ? "" : X_REQUIRED;
-        const yMessage = fieldError(yInput, LIMITS.y);
-        const rMessage = fieldError(rInput, LIMITS.r);
-
-        setError(xError, xMessage);
-        setError(yError, yMessage);
-        setError(rError, rMessage);
-        markInvalid(yInput, yMessage !== "");
-        markInvalid(rInput, rMessage !== "");
-
-        if (xMessage !== "" || yMessage !== "" || rMessage !== "") {
-            const first = [
-                [xMessage, xBoxes[0]],
-                [yMessage, yInput],
-                [rMessage, rInput],
-            ].find(([message]) => message !== "");
-            first[1].focus();
+        const hasErrors = showErrors({
+            x: xBoxes.some((box) => box.checked) ? "" : X_REQUIRED,
+            y: fieldError(yInput, LIMITS.y),
+            r: fieldError(rInput, LIMITS.r),
+        });
+        if (hasErrors) {
             return;
         }
 
-        const x = Number(xBoxes.find((box) => box.checked).value);
-        const y = parseNumber(yInput.value);
-        const r = parseNumber(rInput.value);
+        const x = xBoxes.find((box) => box.checked).value;
+        const y = normalizeNumber(yInput.value);
+        const r = normalizeNumber(rInput.value);
 
-        addResult({ x, y, r, hit: isHit(x, y, r), timestamp: Date.now() });
-        lastPoint = { x, y };
-        redrawArea(rInput.value);
+        submitButton.disabled = true;
+        submitButton.setAttribute("aria-busy", "true");
+        try {
+            setServerInfo(await addPoint({ x, y, r }));
+            lastPoint = { x: Number(x), y: Number(y) };
+            redrawArea(rInput.value);
+        } catch (error) {
+            showErrors(error.errors);
+        } finally {
+            submitButton.disabled = false;
+            submitButton.removeAttribute("aria-busy");
+        }
     });
 }
 
-function doClear() {
-    clearDots();
-    clearResults();
-    lastPoint = null;
+async function doClear(errorElement) {
+    try {
+        setServerInfo(await deleteResults());
+        clearDots();
+        lastPoint = null;
+        setError(errorElement, "");
+    } catch (error) {
+        setError(errorElement, error.message);
+    }
 }
 
 function initClearButton() {
     const dialog = document.getElementById("clear-dialog");
+    const resultsError = document.getElementById("results-error");
 
     document.getElementById("clear-button").addEventListener("click", () => {
         dialog.showModal();
     });
 
-    dialog.addEventListener("close", () => {
+    dialog.addEventListener("close", async () => {
         if (dialog.returnValue === "confirm") {
-            doClear();
+            await doClear(resultsError);
         }
     });
+}
+
+function initRefreshButton() {
+    const button = document.getElementById("refresh-button");
+    const resultsError = document.getElementById("results-error");
+
+    button.addEventListener("click", async () => {
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+        try {
+            await refreshSync();
+            setError(resultsError, "");
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                setError(resultsError, error.message);
+            }
+        } finally {
+            button.disabled = false;
+            button.removeAttribute("aria-busy");
+        }
+    });
+}
+
+function initSyncStatus() {
+    const resultsError = document.getElementById("results-error");
+
+    document.addEventListener("sync-error", (event) => setError(resultsError, event.detail));
+    document.addEventListener("sync-ok", () => setError(resultsError, ""));
 }
 
 function initTooltips() {
@@ -261,6 +317,8 @@ function init() {
     initValidation();
     initTooltips();
     initClearButton();
+    initRefreshButton();
+    initSyncStatus();
 }
 
 if (document.readyState === "loading") {

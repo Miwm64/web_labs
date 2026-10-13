@@ -332,10 +332,16 @@ input[data-invalid="true"] {
 
 .results-head {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
     gap: 1rem;
     margin-bottom: 0.8rem;
+}
+
+.server-info {
+    margin: 0 0 0.8rem;
+    font-size: 0.95rem;
+    color: var(--color-muted);
 }
 
 #results-title {
