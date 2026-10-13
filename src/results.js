@@ -20,23 +20,6 @@ const STORED_RANGES = {
     r: { min: 2, max: 5 },
 };
 
-let currentStorage = localStorage;
-let currentKey = STORAGE_KEY;
-let currentStorageType = "local";
-
-function useStorage(type, key = STORAGE_KEY) {
-    currentStorageType = type;
-    if (type === "local") {
-        currentStorage = sessionStorage;
-    } else if (type === "session") {
-        currentStorage = localStorage;
-    }
-    currentKey = key;
-    storedResults.length = 0;
-    storedResults.push(...readStorage());
-    renderResults();
-}
-
 function isInSquare(x, y, r) {
     return x >= -r - HIT_EPSILON && x <= HIT_EPSILON && y >= -HIT_EPSILON && y <= r + HIT_EPSILON;
 }
@@ -71,25 +54,39 @@ function isValidResult(item) {
     );
 }
 
-function readCookie(key) {
-    const match = document.cookie.match(new RegExp(`(?:^|; )${key}=([^;]*)`));
-    return match ? decodeURIComponent(match[1]) : null;
+const COOKIE_MAX_AGE_S = 60 * 60 * 24 * 365;
+
+function setCookie(key, value, maxAge) {
+    document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`;
 }
 
-function writeCookie(key, value) {
-    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000`;
+function webStorage(getStorage) {
+    return {
+        read: (key) => getStorage().getItem(key),
+        write: (key, value) => getStorage().setItem(key, value),
+        remove: (key) => getStorage().removeItem(key),
+    };
 }
+
+const STORAGE_BACKENDS = {
+    local: webStorage(() => localStorage),
+    session: webStorage(() => sessionStorage),
+    cookie: {
+        read(key) {
+            const prefix = `${encodeURIComponent(key)}=`;
+            const entry = document.cookie.split("; ").find((part) => part.startsWith(prefix));
+            return entry === undefined ? null : decodeURIComponent(entry.slice(prefix.length));
+        },
+        write: (key, value) => setCookie(key, value, COOKIE_MAX_AGE_S),
+        remove: (key) => setCookie(key, "", 0),
+    },
+};
+
+const storage = { backend: STORAGE_BACKENDS.local, key: STORAGE_KEY };
 
 function readStorage() {
     try {
-        let raw;
-
-        if (currentStorageType === "cookie") {
-            raw = readCookie(currentKey);
-        } else {
-            raw = currentStorage.getItem(currentKey);
-        }
-
+        const raw = storage.backend.read(storage.key);
         const parsed = raw === null ? [] : JSON.parse(raw);
         return Array.isArray(parsed) ? parsed.filter(isValidResult) : [];
     } catch {
@@ -99,29 +96,34 @@ function readStorage() {
 
 function writeStorage(items) {
     try {
-        if (currentStorageType === "cookie") {
-            writeCookie(currentKey, JSON.stringify(items));
-        } else {
-            currentStorage.setItem(currentKey, JSON.stringify(items));
-        }
+        storage.backend.write(storage.key, JSON.stringify(items));
     } catch {
-        // nothing
+        // ignore
     }
 }
 
 function removeStorage() {
     try {
-        if (currentStorageType === "cookie") {
-            document.cookie = `${currentKey}=; path=/; max-age=0`;
-        } else {
-            currentStorage.removeItem(currentKey);
-        }
+        storage.backend.remove(storage.key);
     } catch {
-        // nothing
+        // ignore
     }
 }
 
-const storedResults = readStorage();
+const storedResults = [];
+
+function useStorage(type, key = STORAGE_KEY) {
+    const backend = STORAGE_BACKENDS[type];
+    if (backend === undefined) {
+        throw new Error(
+            `Unknown storage type "${type}", expected one of: ${Object.keys(STORAGE_BACKENDS).join(", ")}`
+        );
+    }
+    storage.backend = backend;
+    storage.key = key;
+    storedResults.splice(0, storedResults.length, ...readStorage());
+    renderResults();
+}
 
 function getResults() {
     return [...storedResults];
@@ -203,7 +205,5 @@ function watchTimeZone() {
     }, TIMEZONE_POLL_MS);
 }
 
-renderResults();
+useStorage("cookie", "my-other-lab");
 watchTimeZone();
-
-useStorage("session", "my-other-lab");
