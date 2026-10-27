@@ -29,6 +29,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//} else {
 	//	writeJSON(w, 200, "apache")
 	//}
+	writeJSON(w, 200, r.URL.Query())
 
 	switch r.URL.Path {
 	case "/api/results":
@@ -145,3 +146,6 @@ func (h *Handler) deleteResults(w http.ResponseWriter, _ *http.Request) {
 		timing: timingSince(start),
 	})
 }
+
+// show threads waiting, how long, how to see how many, where to check
+//
