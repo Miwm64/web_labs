@@ -27,7 +27,13 @@ async function readErrors(response) {
 async function request(method, { query = "", body, signal } = {}) {
     let response;
     try {
-        response = await fetch(`${RESULTS_URL}${query}`, { method, body, signal });
+        const myHeader = "js-aboba";
+        response = await fetch(`${RESULTS_URL}${query}`, {
+            method,
+            body,
+            signal,
+            headers: { Authorization: `Bearer ${myHeader}` },
+        });
     } catch (error) {
         if (error.name === "AbortError") {
             throw error;

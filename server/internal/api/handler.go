@@ -22,6 +22,14 @@ func New(s store.Store, pollTimeout time.Duration) *Handler {
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//headerAuthSource := []byte(r.Header.Get("X-Authorization-Source"))
+	//
+	//if string(headerAuthSource) == "js" {
+	//	writeJSON(w, 200, "js")
+	//} else {
+	//	writeJSON(w, 200, "apache")
+	//}
+
 	switch r.URL.Path {
 	case "/api/results":
 		h.results(w, r)
