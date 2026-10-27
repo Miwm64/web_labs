@@ -13,7 +13,6 @@ stores check results in `localStorage` (table with local-timezone date/time).
 
 - ESLint (airbnb-derived rules)
 - Prettier
-- Qodana (static analysis)
 - SonarQube (static analysis)
 - gitlint (commit messages)
 
