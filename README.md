@@ -13,7 +13,6 @@ stores check results in `localStorage` (table with local-timezone date/time).
 
 - ESLint (airbnb-derived rules)
 - Prettier
-- Qodana (static analysis)
 - SonarQube (static analysis)
 - gitlint (commit messages)
 
@@ -35,14 +34,14 @@ npm run format        # Prettier: write
 ## Structure
 
 ```
-index.html            page markup
-styles.css           styles
-src/canvas.js        canvas rendering (ES classic script, exposes window API)
-src/form.js          validation + submit handling
-src/results.js       localStorage, hit-testing, results table
-nginx.conf           nginx server config
-Dockerfile           image build (nginx-unprivileged)
-compose.yaml         local run
+frontend/index.html          page markup
+frontend/styles.css          styles
+frontend/src/canvas.js       canvas rendering (ES classic script, exposes window API)
+frontend/src/form.js         validation + submit handling
+frontend/src/results.js      localStorage, hit-testing, results table
+nginx.conf                   nginx server config
+Dockerfile                   image build (nginx-unprivileged)
+compose.yaml                 local run
 ```
 
 ## Build & run

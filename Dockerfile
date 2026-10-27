@@ -1,7 +1,8 @@
-FROM nginxinc/nginx-unprivileged:alpine
+FROM httpd:2.4-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY index.html styles.css /usr/share/nginx/html/
-COPY src/ /usr/share/nginx/html/src/
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+COPY frontend/ /usr/local/apache2/htdocs/
+
+USER www-data
 
 EXPOSE 8080
